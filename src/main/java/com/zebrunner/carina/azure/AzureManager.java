@@ -46,7 +46,7 @@ public class AzureManager implements CloudManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final Pattern AZURE_CONTAINER_PATTERN = Pattern.compile(
             "\\/\\/(?<accountName>[a-z0-9]{3,24})\\.blob.core.windows.net\\/(?:(?<containerName>\\$root|(?:[a-z0-9](?!.*--)[a-z0-9-]{1,61}[a-z0-9]))\\/)?(?<remoteFilePath>.{1,1024})");
-    private static volatile AzureManager instance = null;
+    private static AzureManager instance = null;
     private BlobServiceClient blobServiceClient = null;
 
     private AzureManager() {}
@@ -92,13 +92,12 @@ public class AzureManager implements CloudManager {
             isSuccessful = true;
         } catch (BlobStorageException bse) {
             LOGGER.error(
-                    "Caught an BlobStorageException, which "
-                            + "means your request made it "
-                            + "to Azure, but was rejected with an error response for some reason.\n"
-                            + "Error Message:    " + bse.getMessage() + "\n"
-                            + "HTTP Status Code: " + bse.getStatusCode() + "\n"
-                            + "Azure Error Code: " + bse.getErrorCode() + "\n"
-                            + "Service Message:  " + bse.getServiceMessage());
+                    "Caught an BlobStorageException, which means your request made it to Azure, "
+                            + "but was rejected with an error response for some reason.\n"
+                            + "Error Message:    {}}\n"
+                            + "HTTP Status Code: {}\n"
+                            + "Azure Error Code: {}\n"
+                            + "Service Message:  {}", bse.getMessage(), bse.getStatusCode(), bse.getErrorCode(), bse.getServiceMessage());
         } catch (Exception e) {
             LOGGER.error("Something went wrong when try to put artifact to the Azure.", e);
         }
@@ -126,13 +125,12 @@ public class AzureManager implements CloudManager {
             isSuccessful = true;
         } catch (BlobStorageException bse) {
             LOGGER.error(
-                    "Caught an BlobStorageException, which "
-                            + "means your request made it "
-                            + "to Azure, but was rejected with an error response for some reason.\n"
-                            + "Error Message:    " + bse.getMessage() + "\n"
-                            + "HTTP Status Code: " + bse.getStatusCode() + "\n"
-                            + "Azure Error Code: " + bse.getErrorCode() + "\n"
-                            + "Service Message:  " + bse.getServiceMessage());
+                    "Caught an BlobStorageException, which means your request made it to Azure, "
+                            + "but was rejected with an error response for some reason.\n"
+                            + "Error Message:    {}\n"
+                            + "HTTP Status Code: {}\n"
+                            + "Azure Error Code: {}\n"
+                            + "Service Message:  {}", bse.getMessage(), bse.getStatusCode(), bse.getErrorCode(), bse.getServiceMessage());
         } catch (Exception e) {
             LOGGER.error("Something went wrong when try to download artifact from Azure.", e);
         }
@@ -153,13 +151,12 @@ public class AzureManager implements CloudManager {
             blobClient.delete();
             isSuccessful = true;
         } catch (BlobStorageException bse) {
-            LOGGER.error("Caught an BlobStorageException, which "
-                    + "means your request made it "
-                    + "to Azure, but was rejected with an error response for some reason.\n"
-                    + "Error Message:    " + bse.getMessage() + "\n"
-                    + "HTTP Status Code: " + bse.getStatusCode() + "\n"
-                    + "Azure Error Code: " + bse.getErrorCode() + "\n"
-                    + "Service Message:  " + bse.getServiceMessage());
+            LOGGER.error("Caught an BlobStorageException, which means your request made it to Azure, "
+                    + "but was rejected with an error response for some reason.\n"
+                    + "Error Message:    {}\n"
+                    + "HTTP Status Code: {}\n"
+                    + "Azure Error Code: {}\n"
+                    + "Service Message:  {}", bse.getMessage(), bse.getStatusCode(), bse.getErrorCode(), bse.getServiceMessage());
         } catch (Exception e) {
             LOGGER.error("Something went wrong when try to delete artifact from the Azure.", e);
         }
@@ -226,17 +223,17 @@ public class AzureManager implements CloudManager {
      */
     public BlobProperties get(String container, String remotePath) {
         if (container == null) {
-            throw new RuntimeException("Container is null!");
+            throw new IllegalArgumentException("Container should not be null!");
         }
         if (container.isEmpty()) {
-            throw new RuntimeException("Container is empty!");
+            throw new IllegalArgumentException("Container should not be empty!");
         }
 
         if (remotePath == null) {
-            throw new RuntimeException("RemotePath is null!");
+            throw new IllegalArgumentException("RemotePath should not be null!");
         }
         if (remotePath.isEmpty()) {
-            throw new RuntimeException("RemotePath is empty!");
+            throw new IllegalArgumentException("RemotePath should not be empty!");
         }
 
         try {
@@ -245,13 +242,12 @@ public class AzureManager implements CloudManager {
 
             return blobClient.getProperties();
         } catch (BlobStorageException bse) {
-            LOGGER.error("Caught an BlobStorageException, which "
-                    + "means your request made it "
-                    + "to Azure, but was rejected with an error response for some reason.\n"
-                    + "Error Message:    " + bse.getMessage() + "\n"
-                    + "HTTP Status Code: " + bse.getStatusCode() + "\n"
-                    + "Azure Error Code: " + bse.getErrorCode() + "\n"
-                    + "Service Message:  " + bse.getServiceMessage());
+            LOGGER.error("Caught an BlobStorageException, which means your request made it to Azure, "
+                    + "but was rejected with an error response for some reason.\n"
+                    + "Error Message:    {}\n"
+                    + "HTTP Status Code: {}\n"
+                    + "Azure Error Code: {}\n"
+                    + "Service Message:  {}", bse.getMessage(), bse.getStatusCode(), bse.getErrorCode(), bse.getServiceMessage());
         }
 
         throw new RuntimeException("Unable to download '" + remotePath + "' from Azure Storage '" + container + "'");
@@ -267,40 +263,39 @@ public class AzureManager implements CloudManager {
     public void put(String container, String remotePath, String localFilePath) {
 
         if (remotePath == null) {
-            throw new RuntimeException("remotePath is null!");
+            throw new IllegalArgumentException("remotePath should not be null!");
         }
         if (remotePath.isEmpty()) {
-            throw new RuntimeException("remotePath is empty!");
+            throw new IllegalArgumentException("remotePath should not be empty!");
         }
 
         if (localFilePath == null) {
-            throw new RuntimeException("FilePath is null!");
+            throw new IllegalArgumentException("FilePath should not be null!");
         }
         if (localFilePath.isEmpty()) {
-            throw new RuntimeException("FilePath is empty!");
+            throw new IllegalArgumentException("FilePath should not be empty!");
         }
 
         File file = new File(localFilePath);
         if (!file.exists()) {
-            throw new RuntimeException("File does not exist! " + localFilePath);
+            throw new IllegalArgumentException("File does not exist! " + localFilePath);
         }
 
-        LOGGER.debug("Uploading a new object to Azure from a file: " + localFilePath);
+        LOGGER.debug("Uploading a new object to Azure from a file: {}", localFilePath);
         try {
             BlobContainerClient blobContainerClient = blobServiceClient.getBlobContainerClient(container);
             BlobClient blobClient = blobContainerClient.getBlobClient(remotePath);
 
-            LOGGER.debug("Uploaded to Azure: '" + localFilePath + "' with remotePath '" + remotePath + "'");
+            LOGGER.debug("Uploaded to Azure: '{}' with remotePath '{}'", localFilePath, remotePath);
 
             blobClient.uploadFromFile(file.getPath());
         } catch (BlobStorageException bse) {
-            LOGGER.error("Caught an BlobStorageException, which "
-                    + "means your request made it "
-                    + "to Azure, but was rejected with an error response for some reason.\n"
-                    + "Error Message:    " + bse.getMessage() + "\n"
-                    + "HTTP Status Code: " + bse.getStatusCode() + "\n"
-                    + "Azure Error Code: " + bse.getErrorCode() + "\n"
-                    + "Service Message:  " + bse.getServiceMessage());
+            LOGGER.error("Caught an BlobStorageException, which means your request made it to Azure, "
+                    + "but was rejected with an error response for some reason.\n"
+                    + "Error Message:    {}\n"
+                    + "HTTP Status Code: {}\n"
+                    + "Azure Error Code: {}\n"
+                    + "Service Message:  {}", bse.getMessage(), bse.getStatusCode(), bse.getErrorCode(), bse.getServiceMessage());
         }
     }
 
@@ -314,35 +309,34 @@ public class AzureManager implements CloudManager {
     public void download(String container, String remoteFile, final File localFilePath) {
 
         if (container == null) {
-            throw new RuntimeException("Container is null!");
+            throw new IllegalArgumentException("Container should not be null!");
         }
         if (container.isEmpty()) {
-            throw new RuntimeException("Container is empty!");
+            throw new IllegalArgumentException("Container should not be empty!");
         }
 
         if (remoteFile == null) {
-            throw new RuntimeException("File Path is null!");
+            throw new IllegalArgumentException("File Path should not be null!");
         }
         if (remoteFile.isEmpty()) {
-            throw new RuntimeException("File Path is empty!");
+            throw new IllegalArgumentException("File Path should not be empty!");
         }
 
         try {
             BlobContainerClient blobContainerClient = blobServiceClient.getBlobContainerClient(container);
             BlobClient blobClient = blobContainerClient.getBlobClient(remoteFile);
 
-            LOGGER.info("Downloading: " + blobContainerClient.getBlobContainerUrl() + " To: " + localFilePath);
+            LOGGER.info("Downloading: {} To: {}", blobContainerClient.getBlobContainerUrl(), localFilePath);
             blobClient.downloadToFile(localFilePath.getAbsolutePath());
             LOGGER.info("Download completed");
 
         } catch (BlobStorageException bse) {
-            LOGGER.error("Caught an BlobStorageException, which "
-                    + "means your request made it "
-                    + "to Azure, but was rejected with an error response for some reason.\n"
-                    + "Error Message:    " + bse.getMessage() + "\n"
-                    + "HTTP Status Code: " + bse.getStatusCode() + "\n"
-                    + "Azure Error Code: " + bse.getErrorCode() + "\n"
-                    + "Service Message:  " + bse.getServiceMessage());
+            LOGGER.error("Caught an BlobStorageException, which means your request made it to Azure, "
+                    + "but was rejected with an error response for some reason.\n"
+                    + "Error Message:    {}\n"
+                    + "HTTP Status Code: {}\n"
+                    + "Azure Error Code: {}\n"
+                    + "Service Message:  {}", bse.getMessage(), bse.getStatusCode(), bse.getErrorCode(), bse.getServiceMessage());
         }
     }
 
@@ -354,11 +348,11 @@ public class AzureManager implements CloudManager {
      */
     public void delete(String container, String file) {
         if (file == null) {
-            throw new RuntimeException("Key is null!");
+            throw new IllegalArgumentException("Key should not be null!");
         }
 
         if (file.isEmpty()) {
-            throw new RuntimeException("Key is empty!");
+            throw new IllegalArgumentException("Key should not be empty!");
         }
 
         try {
@@ -369,13 +363,12 @@ public class AzureManager implements CloudManager {
             blobClient.delete();
 
         } catch (BlobStorageException bse) {
-            LOGGER.error("Caught an BlobStorageException, which "
-                    + "means your request made it "
-                    + "to Azure, but was rejected with an error response for some reason.\n"
-                    + "Error Message:    " + bse.getMessage() + "\n"
-                    + "HTTP Status Code: " + bse.getStatusCode() + "\n"
-                    + "Azure Error Code: " + bse.getErrorCode() + "\n"
-                    + "Service Message:  " + bse.getServiceMessage());
+            LOGGER.error("Caught an BlobStorageException, which means your request made it to Azure, "
+                    + "but was rejected with an error response for some reason.\n"
+                    + "Error Message:    {}\n"
+                    + "HTTP Status Code: {}\n"
+                    + "Azure Error Code: {}\n"
+                    + "Service Message:  {}", bse.getMessage(), bse.getStatusCode(), bse.getErrorCode(), bse.getServiceMessage());
         }
     }
 }
