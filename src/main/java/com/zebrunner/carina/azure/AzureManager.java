@@ -168,7 +168,8 @@ public class AzureManager implements IArtifactManager {
 
             BlobProperties blobProperties = get(containerName, remoteFilePath);
             String azureLocalStorage = Configuration.get(Configuration.Parameter.AZURE_LOCAL_STORAGE);
-            String localFilePath = azureLocalStorage + File.separator + StringUtils.substringAfterLast(remoteFilePath, "/");
+            String localFilePath = azureLocalStorage + File.separator + (remoteFilePath.contains("/") ?
+                    StringUtils.substringAfterLast(remoteFilePath, "/") : remoteFilePath);
 
             File file = new File(localFilePath);
 
@@ -193,7 +194,6 @@ public class AzureManager implements IArtifactManager {
                 Configuration.setBuild(file.getName());
             }
             return file.getAbsolutePath();
-
         } else {
             throw new RuntimeException(String.format("Unable to parse '%s' path using Azure pattern", url));
         }
