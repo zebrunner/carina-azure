@@ -44,7 +44,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
         <!-- todo change to release version -->
-        <carina-utils.version>1.0.0.19-SNAPSHOT</carina-utils.version>
+        <carina-utils.version>1.0.0</carina-utils.version>
+        <carina-commons.version>1.0.0-SNAPSHOT</carina-commons.version>
         <slf4j.version>1.7.30</slf4j.version>
         <azure-storage-blob.version>12.7.0</azure-storage-blob.version>
         <jackson.version>2.13.3</jackson.version>
@@ -78,6 +79,11 @@
             <groupId>com.zebrunner</groupId>
             <artifactId>carina-utils</artifactId>
             <version>${carina-utils.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zebrunner</groupId>
+            <artifactId>carina-commons</artifactId>
+            <version>${carina-commons.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
