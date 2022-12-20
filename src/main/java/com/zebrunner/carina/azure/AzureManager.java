@@ -23,10 +23,10 @@ import com.azure.storage.blob.BlobUrlParts;
 import com.azure.storage.blob.models.BlobProperties;
 import com.azure.storage.blob.models.BlobStorageException;
 import com.azure.storage.common.StorageSharedKeyCredential;
+import com.zebrunner.carina.commons.artifact.IArtifactManager;
 import com.zebrunner.carina.utils.Configuration;
 import com.zebrunner.carina.utils.FileManager;
 import com.zebrunner.carina.utils.R;
-import com.zebrunner.carina.utils.cloud.CloudManager;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -42,7 +42,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AzureManager implements CloudManager {
+public class AzureManager implements IArtifactManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final Pattern AZURE_CONTAINER_PATTERN = Pattern.compile(
             "\\/\\/(?<accountName>[a-z0-9]{3,24})\\.blob.core.windows.net\\/(?:(?<containerName>\\$root|(?:[a-z0-9](?!.*--)[a-z0-9-]{1,61}[a-z0-9]))\\/)?(?<remoteFilePath>.{1,1024})");
@@ -149,11 +149,11 @@ public class AzureManager implements CloudManager {
         } catch (Exception e) {
             LOGGER.error("Something went wrong when try to delete artifact from the Azure.", e);
         }
-        return isSuccessful;
-    }
+       return isSuccessful;
+   }
 
-   @Override
-    public String updateAppPath(String url) {
+    @Override
+    public String getDirectLink(String url) {
         if (Objects.isNull(url) || url.isEmpty()) {
             throw new IllegalArgumentException("Argument cannot be null");
         }
@@ -168,7 +168,8 @@ public class AzureManager implements CloudManager {
 
             BlobProperties blobProperties = get(containerName, remoteFilePath);
             String azureLocalStorage = Configuration.get(Configuration.Parameter.AZURE_LOCAL_STORAGE);
-            String localFilePath = azureLocalStorage + File.separator + StringUtils.substringAfterLast(remoteFilePath, "/");
+            String localFilePath = azureLocalStorage + File.separator + (remoteFilePath.contains("/") ?
+                    StringUtils.substringAfterLast(remoteFilePath, "/") : remoteFilePath);
 
             File file = new File(localFilePath);
 
@@ -193,7 +194,6 @@ public class AzureManager implements CloudManager {
                 Configuration.setBuild(file.getName());
             }
             return file.getAbsolutePath();
-
         } else {
             throw new RuntimeException(String.format("Unable to parse '%s' path using Azure pattern", url));
         }
