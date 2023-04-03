@@ -53,7 +53,6 @@
         <carina-commons.version>1.0.2.P1-SNAPSHOT</carina-commons.version>
         <slf4j.version>1.7.30</slf4j.version>
         <azure-storage-blob.version>12.20.3</azure-storage-blob.version>
-        <jackson.version>2.14.1</jackson.version>
         <testng.version>7.7.1</testng.version>
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
         <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
@@ -111,11 +110,6 @@
             <groupId>com.azure</groupId>
             <artifactId>azure-storage-blob</artifactId>
             <version>${azure-storage-blob.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>
