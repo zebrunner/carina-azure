@@ -52,7 +52,7 @@
         <carina-utils.version>1.0.3</carina-utils.version>
         <carina-commons.version>1.0.2.P1-SNAPSHOT</carina-commons.version>
         <slf4j.version>1.7.30</slf4j.version>
-        <azure-storage-blob.version>12.20.3</azure-storage-blob.version>
+        <azure-storage-blob.version>12.21.1</azure-storage-blob.version>
         <testng.version>7.7.1</testng.version>
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
         <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
