@@ -49,13 +49,11 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
-        <carina-utils.version>1.0.1</carina-utils.version>
-        <carina-commons.version>1.0.1</carina-commons.version>
+        <carina-utils.version>1.0.3</carina-utils.version>
+        <carina-commons.version>1.0.2</carina-commons.version>
         <slf4j.version>1.7.30</slf4j.version>
-        <azure-storage-blob.version>12.7.0</azure-storage-blob.version>
-        <jackson.version>2.14.1</jackson.version>
+        <azure-storage-blob.version>12.21.1</azure-storage-blob.version>
         <testng.version>7.7.1</testng.version>
-
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
         <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
         <maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
@@ -83,6 +81,20 @@
             <groupId>com.zebrunner</groupId>
             <artifactId>carina-utils</artifactId>
             <version>${carina-utils.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.testng</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.seleniumhq.selenium</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.rest-assured</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.zebrunner</groupId>
@@ -100,15 +112,10 @@
             <version>${azure-storage-blob.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>${testng.version}</version>
-            <scope>compile</scope>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
