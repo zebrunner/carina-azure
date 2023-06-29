@@ -16,8 +16,9 @@
 package com.zebrunner.carina.azure;
 
 import com.azure.storage.blob.models.BlobProperties;
-import com.zebrunner.carina.utils.Configuration;
+import com.zebrunner.carina.azure.config.AzureConfiguration;
 import com.zebrunner.carina.utils.FileManager;
+import com.zebrunner.carina.utils.config.Configuration;
 import org.apache.commons.codec.binary.Base64;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -65,7 +66,7 @@ public class AzureClientTest {
 
     @Test(expectedExceptions = RuntimeException.class)
     public void testGetKeyNull() {
-        String localPath = Configuration.get(Configuration.Parameter.AZURE_LOCAL_STORAGE);
+        String localPath = Configuration.getRequired(AzureConfiguration.Parameter.AZURE_LOCAL_STORAGE);
         AzureManager.getInstance().download("resources", "apk-StableDev.apk", new File(localPath + "/apk-StableDev.apk"));
         Assert.fail("Key verification doesn't work!");
     }
@@ -84,7 +85,6 @@ public class AzureClientTest {
 
     @Test(expectedExceptions = {RuntimeException.class, IOException.class, NoSuchAlgorithmException.class})
     public void testGetPropsNull() throws IOException, NoSuchAlgorithmException {
-        String localPath = Configuration.get(Configuration.Parameter.AZURE_LOCAL_STORAGE);
         BlobProperties value = AzureManager.getInstance().get("resources", "apk-StableDev.apk");
 
         String remoteFileMD5 = Base64.encodeBase64String(value.getContentMd5());

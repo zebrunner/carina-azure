@@ -23,10 +23,12 @@ import com.azure.storage.blob.BlobUrlParts;
 import com.azure.storage.blob.models.BlobProperties;
 import com.azure.storage.blob.models.BlobStorageException;
 import com.azure.storage.common.StorageSharedKeyCredential;
+import com.zebrunner.carina.azure.config.AzureConfiguration;
 import com.zebrunner.carina.commons.artifact.IArtifactManager;
-import com.zebrunner.carina.utils.Configuration;
 import com.zebrunner.carina.utils.FileManager;
 import com.zebrunner.carina.utils.R;
+import com.zebrunner.carina.utils.config.Configuration;
+import com.zebrunner.carina.utils.config.StandardConfigurationOption;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -60,17 +62,14 @@ public class AzureManager implements IArtifactManager {
     public static synchronized AzureManager getInstance() {
         if (instance == null) {
             AzureManager azureManager = new AzureManager();
-            String accountName = Configuration.getDecrypted(Configuration.Parameter.AZURE_ACCOUNT_NAME);
-            String endpoint = Configuration.getDecrypted(Configuration.Parameter.AZURE_BLOB_URL);
+            String accountName = Configuration.getRequired(AzureConfiguration.Parameter.AZURE_ACCOUNT_NAME, StandardConfigurationOption.DECRYPT);
+            String endpoint = Configuration.getRequired(AzureConfiguration.Parameter.AZURE_BLOB_URL, StandardConfigurationOption.DECRYPT);
             BlobServiceClientBuilder blobServiceClientBuilder = new BlobServiceClientBuilder()
                     .endpoint(endpoint);
-
-            String secretKey = Configuration.getDecrypted(Configuration.Parameter.AZURE_ACCESS_KEY_TOKEN);
-            if (!secretKey.isEmpty()) {
-                StorageSharedKeyCredential credential = new StorageSharedKeyCredential(accountName, secretKey);
+            Configuration.get(AzureConfiguration.Parameter.AZURE_ACCESS_KEY_TOKEN, StandardConfigurationOption.DECRYPT).ifPresent(token -> {
+                StorageSharedKeyCredential credential = new StorageSharedKeyCredential(accountName, token);
                 blobServiceClientBuilder.credential(credential);
-            }
-
+            });
             azureManager.blobServiceClient = blobServiceClientBuilder.buildClient();
             instance = azureManager;
         }
@@ -164,15 +163,14 @@ public class AzureManager implements IArtifactManager {
             String remoteFilePath = matcher.group("remoteFilePath");
 
             LOGGER.info("Account: {}\nContainer: {}\nRemotePath: {}", accountName, containerName, remoteFilePath);
-            R.CONFIG.put(Configuration.Parameter.AZURE_ACCOUNT_NAME.getKey(), accountName);
+            R.CONFIG.put(AzureConfiguration.Parameter.AZURE_ACCOUNT_NAME.getKey(), accountName);
 
             BlobProperties blobProperties = get(containerName, remoteFilePath);
-            String azureLocalStorage = Configuration.get(Configuration.Parameter.AZURE_LOCAL_STORAGE);
+            String azureLocalStorage = Configuration.getRequired(AzureConfiguration.Parameter.AZURE_LOCAL_STORAGE);
             String localFilePath = azureLocalStorage + File.separator + (remoteFilePath.contains("/") ?
                     StringUtils.substringAfterLast(remoteFilePath, "/") : remoteFilePath);
 
             File file = new File(localFilePath);
-
             try {
                 // verify requested artifact by checking the checksum
                 if (file.exists() && FileManager.getFileChecksum(FileManager.Checksum.MD5, file)
@@ -186,12 +184,6 @@ public class AzureManager implements IArtifactManager {
 
             } catch (Exception exception) {
                 LOGGER.error("Azure app path update exception detected!", exception);
-            }
-
-            // try to redefine app_version if it's value is latest or empty
-            String appVersion = Configuration.get(Configuration.Parameter.APP_VERSION);
-            if (appVersion.equals("latest") || appVersion.isEmpty()) {
-                Configuration.setBuild(file.getName());
             }
             return file.getAbsolutePath();
         } else {
